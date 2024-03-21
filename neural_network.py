@@ -60,8 +60,13 @@ class Network:
     def print(self):
         for layer in self.network:
             for neur in layer:
-                print(neur.linksWeight)
+                print(neur.linksWeight, end=' ')
+            print()
     
+    def setInput(self, inputData):
+        in_dataLayer = self.createLayer(inputData)
+        self.network.insert(0,in_dataLayer)
+        
     #Set the network 2d list with the given sizes
     def setNetwork(self, nbHiddenLayers, out_layerSize, hiddenLayerSize):
         self.nbLayers = nbHiddenLayers + 2
@@ -79,9 +84,8 @@ class Network:
                     self.network[i][j].linksWeight.append(rd.uniform(0.0,1.0))
     
     #executes the forward propagation from a given input data              
-    def forwProp(self, in_data):
-        in_dataLayer = self.createLayer(in_data)
-        self.network[0] = in_dataLayer + self.network
+    def forwProp(self):
+        #self.print()
         for i in range(1, self.nbLayers):
             for j in range(len(self.network[i])):
                 tmp_val = 0
@@ -103,16 +107,21 @@ class Network:
 #####_Main_#####
 #setting up the network
 network = Network()
-network.setNetwork(50,2,3)
+network.setNetwork(2,2,2)
 network.setActivFunc(tanh)
+
+input_list  = [1,2]
+network.setInput(input_list)
+network.print()
 network.initWeights()
 
-input_list  = [1,2,3,4]
 nbIterations = int(input("nombre d'itérations : "))
 
 for i in range(nbIterations):
-    layer_out = network.forwProp(input_list)
-    print([neur.val for neur in layer_out])
+    layer_out = network.forwProp()
+    
+    print(i+1, "/", nbIterations, ": DONE")
+    #print([neur.val for neur in layer_out])
                 
         
         
