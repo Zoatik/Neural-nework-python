@@ -70,7 +70,7 @@ class Network:
     #Set the network 2d list with the given sizes
     def setNetwork(self, nbHiddenLayers, out_layerSize, hiddenLayerSize):
         self.nbLayers = nbHiddenLayers + 2
-        self.network += [[Neur()]*hiddenLayerSize]*nbHiddenLayers
+        self.network = [[Neur()]*hiddenLayerSize]*nbHiddenLayers
         self.network += [[Neur()]*out_layerSize]
         
     def setActivFunc(self,fct):
@@ -89,9 +89,9 @@ class Network:
         for i in range(1, self.nbLayers):
             for j in range(len(self.network[i])):
                 tmp_val = 0
-                for k in range(len(self.network[i][j].linksWeight)):
+                for k in range(len(self.network[i-1])):
                     weight = self.network[i][j].linksWeight[k]
-                    tmp_val += self.network[i][j].calcVal(self.network[i-1][j].val, weight)
+                    tmp_val += self.network[i][j].calcVal(self.network[i-1][k].val, weight)
                 self.network[i][j].activate(self.fct, tmp_val)
             
         return self.network[-1]
@@ -107,13 +107,14 @@ class Network:
 #####_Main_#####
 #setting up the network
 network = Network()
-network.setNetwork(2,2,2)
+network.setNetwork(4,2,4)
 network.setActivFunc(tanh)
 
-input_list  = [1,2]
+input_list  = [1,2,3]
 network.setInput(input_list)
 network.print()
 network.initWeights()
+network.print()
 
 nbIterations = int(input("nombre d'itérations : "))
 
