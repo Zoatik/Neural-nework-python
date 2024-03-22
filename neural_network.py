@@ -1,4 +1,4 @@
-from cmath import tanh, exp
+from math import tanh, exp
 import random as rd
 
 def sigmoid(x, derivate = False):
@@ -15,7 +15,7 @@ def leakyReLu(x, eps = 0, derivate = False):
             return  eps
         return 1
     return max(eps,x)
-class actFunc:
+class ActFunc:
     def __init__(self, funcName):
         if funcName == "tanh":
             self.func = tanh
@@ -26,7 +26,7 @@ class actFunc:
     
     
 class Neur:
-    def __init__(self, val = 0):
+    def __init__(self, val = 0.0):
         self.biais = 0.0
         self.val = val
         self.weightIndexes = []
@@ -43,7 +43,7 @@ class Neur:
           
 class Network:
     #Network constructor with default activation function set to tanh
-    def __init__(self, fct = actFunc("tanh")):
+    def __init__(self, fct = ActFunc("tanh")):
         self.nbLayers = 0
         self.network = [[]]
         self.layers = []
@@ -60,7 +60,8 @@ class Network:
     def print(self):
         for layer in self.network:
             for neur in layer:
-                print(neur.linksWeight, end=' ')
+                form_list = [ '%.2f' % elem for elem in neur.linksWeight]
+                print(form_list, end=' ')
             print()
     
     def setInput(self, inputData):
@@ -70,11 +71,11 @@ class Network:
     #Set the network 2d list with the given sizes
     def setNetwork(self, nbHiddenLayers, out_layerSize, hiddenLayerSize):
         self.nbLayers = nbHiddenLayers + 2
-        self.network = [[Neur()]*hiddenLayerSize]*nbHiddenLayers
-        self.network += [[Neur()]*out_layerSize]
+        self.network = [[Neur() for i in range(hiddenLayerSize)] for j in range(nbHiddenLayers)]
+        self.network += [[Neur()for i in range(out_layerSize)]]
         
-    def setActivFunc(self,fct):
-        self.fct = fct
+    def setActivFunc(self, fct):
+        self.fct = ActFunc(fct).func
     
     #initialize the weights for all possible links
     def initWeights(self):
@@ -107,13 +108,14 @@ class Network:
 #####_Main_#####
 #setting up the network
 network = Network()
-network.setNetwork(4,2,4)
-network.setActivFunc(tanh)
+network.setNetwork(3,2,10)
+network.setActivFunc("leakyReLu")
 
-input_list  = [1,2,3]
+input_list  = [1,2,3,4]
 network.setInput(input_list)
 network.print()
 network.initWeights()
+print()
 network.print()
 
 nbIterations = int(input("nombre d'itérations : "))
@@ -122,13 +124,4 @@ for i in range(nbIterations):
     layer_out = network.forwProp()
     
     print(i+1, "/", nbIterations, ": DONE")
-    #print([neur.val for neur in layer_out])
-                
-        
-        
-        
-        
-
-
-
-    
+    print(['%.2f' % neur.val for neur in layer_out])
